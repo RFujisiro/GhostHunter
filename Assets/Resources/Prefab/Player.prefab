@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8999782479125759771}
   - component: {fileID: 8999782479125759770}
   m_Layer: 3
-  m_Name: Camera
+  m_Name: PlayerCamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -299,6 +299,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3dca92cc22f54364eb7b96a63333cb92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onGhostView: 0
   tmpCamKey: {x: 0, y: 0}
   tmpKey: {x: 0, y: 0}
   bodyObject: {fileID: 6519651154408629654}

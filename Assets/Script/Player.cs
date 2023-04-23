@@ -81,6 +81,7 @@ public class Player : MonoBehaviour
     {
         if (context.started)
         {
+          //  Debug.Log($"ƒTƒuŽËŒ‚:plyaer");
             weaponSC[0].InputKey("Sub", true);
             weaponSC[1].InputKey("Sub", true);
         }

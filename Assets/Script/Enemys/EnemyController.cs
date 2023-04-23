@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
+    public GameObject TargetUI;
     public int id;
     private EnemyInfo enemyInfo=new EnemyInfo();
     private void Awake()
     {
         Debug.Log($"id={id}:name={gameObject.name}");
-        enemyInfo=GameObject.FindWithTag("GameManager").gameObject.GetComponent<GameManager>().GetEnemyInfo(id);
-        enemyInfo.Set(gameObject);
+        EnemyInfo tmpinfo= GameObject.FindWithTag("GameManager").gameObject.GetComponent<GameManager>().GetEnemyInfo(id);
+        enemyInfo.Set(gameObject,tmpinfo, TargetUI);
     }
     private void FixedUpdate()
     {

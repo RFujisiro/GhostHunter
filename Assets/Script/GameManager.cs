@@ -72,6 +72,7 @@ public class WeaponInfo
         shotSE = Resources.Load<AudioClip>("Sound/EnergyShot");
         bulletPrefab = Resources.Load<GameObject>("Prefab/Weapon/Bullet");
         mainShotCoolDown_MAX = 1 / rate;
+        subShot.Set(this);
     }
 
     public void Update()
@@ -99,29 +100,83 @@ public class WeaponInfo
     }
 
     #region SubShots
+    [System.Serializable]
+    public class SubShot
+    {
+        WeaponInfo wI;
+        public enum SubShotType {shotGun,streng,burst}
+        public SubShotType subShotType;
 
+        public int oneShotCount;//バーストかショットガンモードにおける射撃弾数です
+        public int rate;//一秒間に発射する回数です
+        public int damage;//一発当たりのダメージです
+        public int accuracy;//精度です、サブショットのため固定です
+
+        public void Set(WeaponInfo winfo)
+        {
+            Debug.Log($"初期化完了{winfo}");
+            wI = winfo;
+        }
+
+        public void OnShot()
+        {
+            Debug.Log($"射撃{subShotType}\n起動したオブジェクト{wI.weaponName}");
+            switch (subShotType)
+            {
+                case SubShotType.shotGun: ShotGunMode(); break;
+                case SubShotType.streng: strengMode(); break;
+                case SubShotType.burst: break;
+            }
+        }
+
+        #region subShots
+        void strengMode()
+        {
+                wI.audio.PlayOneShot(wI.shotSE);
+                var shotDirTmp = wI.weaponObject.transform.eulerAngles;
+                Quaternion shotDir = Quaternion.Euler(shotDirTmp);
+                GameObject bullet = MonoBehaviour.Instantiate(wI.bulletPrefab, wI.muzzlePos, shotDir);
+                bullet.GetComponent<Bullet>().Shot(damage*3, wI.speed);
+            
+        }
+        void ShotGunMode()
+        {
+            wI.audio.PlayOneShot(wI.shotSE);
+            for (int i = 0; i < oneShotCount - 1; i++)
+            {
+                var shotDirTmp = wI.weaponObject.transform.eulerAngles;
+                shotDirTmp.x += Random.Range(-accuracy, accuracy);
+                shotDirTmp.y += Random.Range(-accuracy, accuracy);
+                Quaternion shotDir = Quaternion.Euler(shotDirTmp);
+                GameObject bullet = MonoBehaviour.Instantiate(wI.bulletPrefab, wI.muzzlePos, shotDir);
+                bullet.GetComponent<Bullet>().Shot(damage, wI.speed);
+            }
+        }
+        void burstMode()
+        {
+            wI.audio.PlayOneShot(wI.shotSE);
+            for (int i = 0; i < oneShotCount - 1; i++)
+            {
+                var shotDirTmp = wI.weaponObject.transform.eulerAngles;
+                shotDirTmp.x += Random.Range(-accuracy, accuracy);
+                shotDirTmp.y += Random.Range(-accuracy, accuracy);
+                Quaternion shotDir = Quaternion.Euler(shotDirTmp);
+                GameObject bullet = MonoBehaviour.Instantiate(wI.bulletPrefab, wI.muzzlePos, shotDir);
+                bullet.GetComponent<Bullet>().Shot(damage, wI.speed);
+            }
+        }
+        
+
+
+        #endregion
+
+    }
+    public SubShot subShot=new SubShot();
     public void OnSubShot()
     {
-        switch (weaponID)
-        {
-            case 1:SubShot_EnergyLifle();break;
-        }
+        subShot.OnShot();
     }
 
-    void SubShot_EnergyLifle()
-    {
-        audio.PlayOneShot(shotSE);
-        for (int i = 0; i < 10; i++)
-        {
-            var shotDirTmp = weaponObject.transform.eulerAngles;
-            shotDirTmp.x += Random.Range(-5, 5);
-            shotDirTmp.y += Random.Range(-5, 5);
-            Quaternion shotDir = Quaternion.Euler(shotDirTmp);
-            GameObject bullet = MonoBehaviour.Instantiate(bulletPrefab, muzzlePos, shotDir);
-            bullet.GetComponent<Bullet>().Shot(damage, speed);
-        }
-
-    }
 
     #endregion
 }
@@ -134,15 +189,25 @@ public class EnemyInfo
 
     public string name;
     public int hitPoint, defense, speed, attack;
-    public bool isFade,isFind;
+    bool isFade,isFind;
     Material normalMaterial, fadeMaterial;
-    GameObject playerObject, enemyObject;
+    GameObject playerObject,playerCam, enemyObject;
+    GameObject target_UI;
     Player playerScript;
     Rigidbody rb;
     SkinnedMeshRenderer smr;
 
-    public void Set(GameObject tmpEnemyObject)
+    public void Set(GameObject tmpEnemyObject,EnemyInfo tmpInfo,GameObject targetUI)
     {
+        #region ステータスの代入
+        name = tmpInfo.name;
+        hitPoint = tmpInfo.hitPoint;
+        defense = tmpInfo.defense;
+        speed = tmpInfo.speed;
+        attack = tmpInfo.attack;
+        #endregion
+
+        target_UI = targetUI;
         enemyObject = tmpEnemyObject;
         rb = enemyObject.GetComponent<Rigidbody>();
         smr = enemyObject.transform.GetChild(0).gameObject.GetComponent<SkinnedMeshRenderer>();
@@ -153,16 +218,20 @@ public class EnemyInfo
         fadeMaterial = Resources.Load<Material>(loadtmp);
 
         playerObject = GameObject.FindWithTag("Player").gameObject;
+        playerCam = GameObject.Find("PlayerCamera").gameObject;
         playerScript = playerObject.GetComponent<Player>();
+
+        isFind = true;
 
     }
     public void OnFadeSwitch()
     {
-        if (playerScript.onGhostView) smr.material = normalMaterial;
-        else smr.material = fadeMaterial;
+        if (playerScript.onGhostView) { smr.material = normalMaterial; target_UI.SetActive(true); }
+        else{ smr.material = fadeMaterial; target_UI.SetActive(false); }
     }
     public void OnMove()
     {
+        Debug.Log($"移動:{isFind}");
         if (!isFind) return;
         enemyObject.transform.LookAt(playerObject.transform.position);
         rb.velocity = enemyObject.transform.forward*speed;
