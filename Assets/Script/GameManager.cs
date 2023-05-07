@@ -52,6 +52,7 @@ public class WeaponInfo
     public string weaponName;
     public int weaponID;
     public float damage, speed, rate, accuracy_MAX;
+    int weapon_ammo,weapon_ammo_MAX,weapon_spareAmmo, weapon_spareAmmo_MAX;
 
     AudioSource audio;
     AudioClip shotSE;
@@ -86,6 +87,7 @@ public class WeaponInfo
     }
     public void Shot()
     {
+        if (weapon_ammo == 0) { ReLoad(); return; }
         if (mainShotCoolDown > 0) return;
         audio.pitch = 1.5f;
         audio.PlayOneShot(shotSE);
@@ -97,6 +99,20 @@ public class WeaponInfo
         bullet.GetComponent<Bullet>().Shot(damage, speed);
         mainShotCoolDown = mainShotCoolDown_MAX;
         if (accuracy < accuracy_MAX) accuracy += 0.1f;
+    }
+    void ReLoad()
+    {
+        int ammoDiff = weapon_ammo_MAX - weapon_ammo;//ƒŠƒ[ƒh‚·‚é”
+        if (ammoDiff <= weapon_spareAmmo)
+        {
+            weapon_ammo = weapon_ammo_MAX;
+            weapon_spareAmmo -= ammoDiff;
+        }
+        else
+        {
+            weapon_ammo = weapon_spareAmmo;
+            weapon_spareAmmo = 0;
+        }
     }
 
     #region SubShots

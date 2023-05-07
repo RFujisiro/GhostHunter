@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.InputSystem;
 
 
@@ -16,8 +17,17 @@ public class Player : MonoBehaviour
     public Vector2 tmpCamKey;
     public Vector2 tmpKey;
     float bodyAngle;
+    bool isDash=false;
+    int speed = 10;
 
     public GameObject bodyObject;
+    #region UI
+    [SerializeField] GameObject ammoInfo;
+    Text text_ammo;
+
+
+    #endregion
+
     private void Awake()
     {
         input = GetComponent<PlayerInput>();
@@ -40,9 +50,9 @@ public class Player : MonoBehaviour
         {
             Vector2 inputtmp = input.currentActionMap["Move"].ReadValue<Vector2>();
             tmpKey = inputtmp;
-            moveDirection = new Vector3(inputtmp.x, 0.0f, inputtmp.y)*2;
+            moveDirection = new Vector3(inputtmp.x, 0.0f, inputtmp.y);
             moveDirection = transform.TransformDirection(moveDirection);
-            moveDirection = moveDirection * 5;
+            moveDirection = moveDirection * (speed*(isDash == true ? 2:1));
 
         }
         moveDirection.y = moveDirection.y - (20 * Time.deltaTime);
@@ -120,7 +130,13 @@ public class Player : MonoBehaviour
             }
         }
     }
-
+    public void Dash(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            isDash = !isDash;
+        }
+    }
     #endregion
 
 }
