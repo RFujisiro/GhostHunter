@@ -50,34 +50,38 @@ public class Shop
 public class WeaponInfo
 {
     public string weaponName;
-    public int weaponID;
-    public float damage, speed, rate, accuracy_MAX;
-    int weapon_ammo,weapon_ammo_MAX,weapon_spareAmmo, weapon_spareAmmo_MAX;
-
+    public float damage, bulletSpeed, rate, accuracy_MAX;
+    int ammo,spareAmmo;
+    public int ammo_MAX, spareAmmo_MAX;
     AudioSource audio;
     AudioClip shotSE;
-    public GameObject weaponObject, bulletPrefab;
+    GameObject weaponObject, bulletPrefab;
+
+    Player playerScript;
 
 
-    public Vector3 muzzlePos;
+    Vector3 muzzlePos;
     float mainShotCoolDown, mainShotCoolDown_MAX;
     float accuracy;
 
     public bool isShot = false;
 
-    public void Set(GameObject weaponObjectTmp,int id)
+    public void Set(GameObject weaponObjectTmp)
     {
-        weaponID = id;
         weaponObject = weaponObjectTmp;
         audio = weaponObject.GetComponent<AudioSource>();
         shotSE = Resources.Load<AudioClip>("Sound/EnergyShot");
         bulletPrefab = Resources.Load<GameObject>("Prefab/Weapon/Bullet");
         mainShotCoolDown_MAX = 1 / rate;
         subShot.Set(this);
+
+        ammo =  ammo_MAX;
+        spareAmmo =  spareAmmo_MAX;
     }
 
-    public void Update()
+    public void Update(Vector3 muzzlePosTMP)
     {
+        muzzlePos = muzzlePosTMP;
         if (mainShotCoolDown > 0)
             mainShotCoolDown -= Time.deltaTime;
         if (mainShotCoolDown < 0) mainShotCoolDown = 0;
@@ -87,7 +91,7 @@ public class WeaponInfo
     }
     public void Shot()
     {
-        if (weapon_ammo == 0) { ReLoad(); return; }
+        if ( ammo == 0) { Debug.Log($"弾切れ{weaponName}"); return; }
         if (mainShotCoolDown > 0) return;
         audio.pitch = 1.5f;
         audio.PlayOneShot(shotSE);
@@ -96,24 +100,27 @@ public class WeaponInfo
         shotDirTmp.y += Random.Range(-accuracy, accuracy);
         Quaternion shotDir = Quaternion.Euler(shotDirTmp);
         GameObject bullet = MonoBehaviour.Instantiate(bulletPrefab, muzzlePos, shotDir);
-        bullet.GetComponent<Bullet>().Shot(damage, speed);
+        bullet.GetComponent<Bullet>().Shot(damage, bulletSpeed);
         mainShotCoolDown = mainShotCoolDown_MAX;
+         ammo--;
         if (accuracy < accuracy_MAX) accuracy += 0.1f;
     }
-    void ReLoad()
+    public void ReLoad()
     {
-        int ammoDiff = weapon_ammo_MAX - weapon_ammo;//リロードする数
-        if (ammoDiff <= weapon_spareAmmo)
+        int ammoDiff =  ammo_MAX -  ammo;
+        Debug.Log($"リロード\nリロード数{ammoDiff}\n残段数{ ammo}\n携帯数{ spareAmmo}");
+        if (ammoDiff <=  spareAmmo)
         {
-            weapon_ammo = weapon_ammo_MAX;
-            weapon_spareAmmo -= ammoDiff;
+             ammo =  ammo_MAX;
+             spareAmmo -= ammoDiff;
         }
         else
         {
-            weapon_ammo = weapon_spareAmmo;
-            weapon_spareAmmo = 0;
+             ammo =  spareAmmo;
+             spareAmmo = 0;
         }
     }
+
 
     #region SubShots
     [System.Serializable]
@@ -152,7 +159,7 @@ public class WeaponInfo
                 var shotDirTmp = wI.weaponObject.transform.eulerAngles;
                 Quaternion shotDir = Quaternion.Euler(shotDirTmp);
                 GameObject bullet = MonoBehaviour.Instantiate(wI.bulletPrefab, wI.muzzlePos, shotDir);
-                bullet.GetComponent<Bullet>().Shot(damage*3, wI.speed);
+                bullet.GetComponent<Bullet>().Shot(damage*3, wI.bulletSpeed);
             
         }
         void ShotGunMode()
@@ -165,7 +172,7 @@ public class WeaponInfo
                 shotDirTmp.y += Random.Range(-accuracy, accuracy);
                 Quaternion shotDir = Quaternion.Euler(shotDirTmp);
                 GameObject bullet = MonoBehaviour.Instantiate(wI.bulletPrefab, wI.muzzlePos, shotDir);
-                bullet.GetComponent<Bullet>().Shot(damage, wI.speed);
+                bullet.GetComponent<Bullet>().Shot(damage, wI.bulletSpeed);
             }
         }
         void burstMode()
@@ -178,7 +185,7 @@ public class WeaponInfo
                 shotDirTmp.y += Random.Range(-accuracy, accuracy);
                 Quaternion shotDir = Quaternion.Euler(shotDirTmp);
                 GameObject bullet = MonoBehaviour.Instantiate(wI.bulletPrefab, wI.muzzlePos, shotDir);
-                bullet.GetComponent<Bullet>().Shot(damage, wI.speed);
+                bullet.GetComponent<Bullet>().Shot(damage, wI.bulletSpeed);
             }
         }
         

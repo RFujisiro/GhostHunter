@@ -14,14 +14,6 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Enter",
-                    "type": "Button",
-                    "id": "126e1583-d4dd-4050-aaad-1af6909ff48f",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": ""
-                },
-                {
                     "name": "Move",
                     "type": "Value",
                     "id": "de845106-0d5e-4f0a-ba42-918e6be45126",
@@ -89,6 +81,14 @@
                     "name": "squat",
                     "type": "Button",
                     "id": "a887a243-5394-4386-9c84-75a4dfc41b8b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Map",
+                    "type": "Button",
+                    "id": "b8042a5e-a81f-42b5-8ed9-37169e1d80fb",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
@@ -339,28 +339,6 @@
                 },
                 {
                     "name": "",
-                    "id": "dbd988d7-5e11-4d0f-aeed-4f131a23c7eb",
-                    "path": "<Keyboard>/e",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Game",
-                    "action": "Enter",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "df374cd0-88b6-4a69-857a-eaee78ee6bfe",
-                    "path": "<Gamepad>/buttonSouth",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Game",
-                    "action": "Enter",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "359268bf-a8e4-4aea-8bbe-322a8a552c0a",
                     "path": "<Keyboard>/escape",
                     "interactions": "",
@@ -422,6 +400,28 @@
                     "processors": "",
                     "groups": "Game",
                     "action": "squat",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "bfbb29aa-38fc-4388-9445-c60cb2905107",
+                    "path": "<Gamepad>/select",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Map",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e38d443b-1d22-45fd-8b91-aa2539481846",
+                    "path": "<Keyboard>/m",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Map",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -13,15 +13,14 @@ public class WeaponSC : MonoBehaviour
     private void Awake()
     {
         weaponInfo = GameObject.Find("GameManager").GetComponent<GameManager>().GetWInfo(weaponID);
-        weaponInfo.Set(gameObject,weaponID);
+        weaponInfo.Set(gameObject);
 
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        weaponInfo.muzzlePos = muzzleObject.transform.position;
-        weaponInfo.Update();
+        weaponInfo.Update(muzzleObject.transform.position);
     }
 
     public bool isSubShot;
@@ -33,7 +32,7 @@ public class WeaponSC : MonoBehaviour
         {
             case "Main": weaponInfo.isShot = on; break;
             case "Sub": weaponInfo.OnSubShot(); break;
-            case "Change": break;
+            case "ReLoad":weaponInfo.ReLoad(); break;
         }
     }
 

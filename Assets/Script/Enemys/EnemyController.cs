@@ -5,17 +5,18 @@ using UnityEngine;
 public class EnemyController : MonoBehaviour
 {
     public GameObject TargetUI;
-    public int id;
+    int id;
     private EnemyInfo enemyInfo=new EnemyInfo();
+    [SerializeField] bool isMove;
     private void Awake()
     {
-        Debug.Log($"id={id}:name={gameObject.name}");
         EnemyInfo tmpinfo= GameObject.FindWithTag("GameManager").gameObject.GetComponent<GameManager>().GetEnemyInfo(id);
         enemyInfo.Set(gameObject,tmpinfo, TargetUI);
     }
     private void FixedUpdate()
     {
         enemyInfo.OnFadeSwitch();
+        if(isMove)
         enemyInfo.OnMove();
     }
 
